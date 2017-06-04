@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spy shit</title>
+  <style>
+    html, body {
+      background-color: #111;
+      color: cyan;
+      height: 100%;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+    }
+    #logon fieldset {
+      border: none;
+    }
+    #logon input {
+      background-color: #111;
+      color: cyan;
+      font-size: 1.67em;
+      border: none;
+      outline: none;
+      font-family: monospace;
+      width: 7ch;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="logon">
+    <form onsubmit="verifyOTP()" action="javascript:void(0);">
+      <fieldset>
+        <legend>Enter code</legend>
+        <input type="tel" maxlength="6" autofocus="" id="code" autocomplete="off">
+      </fieldset>
+    </form>
+  </div>
+  <div id="publickey" class="hidden">
+    <p>access granted</p>
+  </div>
+  <script src="vendor/jsOTP/dist/jsOTP.min.js"></script>
+  <script>
+    function verifyOTP() {
+      console.log('banana');
+      var totp = new jsOTP.totp(),
+          secret = atob('c2Q0aWZjaXpjcjQyZXNjaGlkN2d6enptdHV6bHRtcTM='),
+          code = document.getElementById('code').value,
+          now = Date.now(), past = now-30000, future = now+30000,
+          past = totp.getOtp(secret, past),
+          now = totp.getOtp(secret, now),
+          future = totp.getOtp(secret, future);
+
+      if (now === code || past === code || future === code) {
+        console.log('code valid');
+        var logon = document.getElementById('logon'),
+            publickey = document.getElementById('publickey');
+        logon.classList.add('hidden');
+        publickey.classList.remove('hidden');
+        return true;
+      } else {
+        console.log('code invalid');
+        document.getElementById('code').value = null;
+        return false;
+      }
+    }
+  </script>
+</body>
+</html>
